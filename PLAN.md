@@ -10,9 +10,9 @@
 **Goal:** Establish the spec-driven baseline before any feature code.
 
 - [x] Author `SPEC.md` (architecture, heuristic formulas & weights)
-- [ ] `chore: scaffold next.js app with typescript and tailwind`
-- [ ] `chore: add env example with provider placeholders`
-- [ ] Add `.gitignore` (node_modules, .env, .next), base layout
+- [x] `chore: scaffold next.js app with typescript and tailwind`
+- [x] `chore: add env example with provider placeholders`
+- [x] Add `.gitignore` (node_modules, .env, .next), base layout
 
 **Exit:** `npx next build` passes; SPEC.md committed first.
 
@@ -20,10 +20,10 @@
 
 **Goal:** Hardened data layer — nothing crashes, nothing leaks.
 
-- [ ] `feat: add strict github url validation with ssrf rejection`
-- [ ] `feat: implement github client with token support and caching`
-- [ ] `feat: add rate limit resilience with backoff and structured errors`
-- [ ] Wire `POST /api/analyze` returning raw telemetry (no scoring yet)
+- [x] `feat: add strict github url validation with ssrf rejection`
+- [x] `feat: implement github client with token support and caching`
+- [x] `feat: add rate limit resilience with backoff and structured errors`
+- [x] Wire `POST /api/analyze` returning raw telemetry (no scoring yet)
 
 **Exit:** Valid URL → 200 with commit telemetry; invalid/private/rate-limited → structured 4xx without upstream body leakage.
 
