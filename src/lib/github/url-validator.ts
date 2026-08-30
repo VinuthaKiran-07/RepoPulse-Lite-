@@ -12,13 +12,14 @@ function checkName(name: string, isOwner: boolean): string | null {
   if (!NAME_PATTERN.test(name)) {
     return "owner and repository names may only contain letters, numbers, periods, hyphens, and underscores";
   }
-  if (
-    name.startsWith("-") ||
-    name.startsWith(".") ||
-    name.endsWith("-") ||
-    name.endsWith(".")
-  ) {
-    return "owner and repository names cannot begin or end with a hyphen or period";
+  if (name.startsWith("-") || name.startsWith(".")) {
+    return "owner and repository names cannot begin with a hyphen or period";
+  }
+  if (isOwner && name.endsWith("-")) {
+    return "owner name cannot end with a hyphen";
+  }
+  if (name.endsWith(".")) {
+    return "owner and repository names cannot end with a period";
   }
   if (name.includes("..")) {
     return "owner and repository names cannot contain consecutive periods";
