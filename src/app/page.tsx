@@ -1,14 +1,84 @@
+"use client";
+
+import AnalyzeForm from "@/components/AnalyzeForm";
+import RepoSummaryCard from "@/components/RepoSummaryCard";
+import { useAnalyze } from "@/lib/use-analyze";
+
+function errorHeadline(code: string): string {
+  switch (code) {
+    case "INVALID_URL":
+      return "That doesn't look like a public GitHub repository URL.";
+    case "REPO_NOT_FOUND":
+      return "Repository not found or private. Check the URL or make the repository public.";
+    case "RATE_LIMITED":
+      return "GitHub rate limit reached — add a token in the form or wait a few minutes.";
+    default:
+      return "Something went wrong while analyzing the repository. Please try again.";
+  }
+}
+
 export default function Home() {
+  const { state, analyze } = useAnalyze();
+  const loading = state.status === "loading";
+
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center gap-6 p-8">
-      <h1 className="text-4xl font-bold tracking-tight">RepoPulse Lite</h1>
-      <p className="text-lg text-neutral-600 dark:text-neutral-400 max-w-md text-center">
-        Deterministic GitHub repository health scoring with an LLM executive
-        audit. Paste any public repository URL to analyze its pulse.
-      </p>
-      <div className="rounded-lg border border-neutral-200 dark:border-neutral-800 p-4 text-sm text-neutral-500">
-        Dashboard coming in Phase 3 — backend ingestion lands in Phase 1.
-      </div>
+    <main className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 sm:py-12">
+      <header className="mb-8 flex flex-col gap-2">
+        <h1 className="text-3xl font-bold tracking-tight text-neutral-900 dark:text-neutral-50 sm:text-4xl">
+          RepoPulse Lite
+        </h1>
+        <p className="max-w-2xl text-sm text-neutral-600 dark:text-neutral-400 sm:text-base">
+          Deterministic GitHub repository health scoring with an LLM executive
+          audit. Paste any public repository URL to analyze its pulse.
+        </p>
+      </header>
+
+      <AnalyzeForm onAnalyze={analyze} loading={loading} />
+
+      {state.status === "error" && (
+        <section
+          role="alert"
+          className="mt-6 rounded-2xl border border-red-300 bg-red-50 p-5 dark:border-red-500/40 dark:bg-red-950/40"
+        >
+          <h2 className="text-sm font-semibold text-red-800 dark:text-red-300">
+            {errorHeadline(state.code)}
+          </h2>
+          <p className="mt-1 text-xs text-red-700 dark:text-red-400">{state.message}</p>
+          {state.retryAfterSeconds !== undefined && (
+            <p className="mt-2 text-xs text-red-700 dark:text-red-400">
+              Rate limit resets in about {Math.ceil(state.retryAfterSeconds / 60)} min.
+            </p>
+          )}
+        </section>
+      )}
+
+      {state.status === "success" && (
+        <div className="mt-6 flex flex-col gap-6">
+          <RepoSummaryCard data={state.data} />
+
+          <section className="rounded-2xl border border-neutral-200 bg-white p-5 shadow-sm dark:border-neutral-800 dark:bg-neutral-900 sm:p-6">
+            <div className="flex items-center gap-3">
+              <span
+                className="text-4xl font-extrabold"
+                style={{ color: state.data.band.color }}
+              >
+                {state.data.score}
+              </span>
+              <div>
+                <p className="text-sm font-semibold text-neutral-900 dark:text-neutral-100">
+                  Health score
+                </p>
+                <p className="text-xs text-neutral-500 dark:text-neutral-400">
+                  Band: {state.data.band.label} (0–100)
+                </p>
+              </div>
+            </div>
+          </section>
+
+          {/* TODO(phase-3.2): score gauge + metric breakdown charts */}
+          {/* TODO(phase-3.3): commit timeline, tier donut, author leaderboard */}
+        </div>
+      )}
     </main>
   );
 }
