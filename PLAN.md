@@ -31,9 +31,9 @@
 
 **Goal:** The core IP — pure, unit-tested, mathematically documented.
 
-- [ ] `feat: implement tier classifier for commit risk levels`
-- [ ] `feat: add multi-dimensional composite health score engine`
-- [ ] `test: add scoring engine unit tests with hand-computed fixtures`
+- [x] `feat: implement tier classifier for commit risk levels`
+- [x] `feat: add multi-dimensional composite health score engine`
+- [x] `test: add scoring engine unit tests with hand-computed fixtures`
 
 **Exit:** `npx vitest run` green; same input always yields identical score.
 
