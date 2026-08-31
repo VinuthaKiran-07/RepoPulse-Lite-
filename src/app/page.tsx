@@ -1,7 +1,9 @@
 "use client";
 
 import AnalyzeForm from "@/components/AnalyzeForm";
+import MetricBreakdown from "@/components/MetricBreakdown";
 import RepoSummaryCard from "@/components/RepoSummaryCard";
+import ScoreGauge from "@/components/ScoreGauge";
 import { useAnalyze } from "@/lib/use-analyze";
 
 function errorHeadline(code: string): string {
@@ -56,26 +58,13 @@ export default function Home() {
         <div className="mt-6 flex flex-col gap-6">
           <RepoSummaryCard data={state.data} />
 
-          <section className="rounded-2xl border border-neutral-200 bg-white p-5 shadow-sm dark:border-neutral-800 dark:bg-neutral-900 sm:p-6">
-            <div className="flex items-center gap-3">
-              <span
-                className="text-4xl font-extrabold"
-                style={{ color: state.data.band.color }}
-              >
-                {state.data.score}
-              </span>
-              <div>
-                <p className="text-sm font-semibold text-neutral-900 dark:text-neutral-100">
-                  Health score
-                </p>
-                <p className="text-xs text-neutral-500 dark:text-neutral-400">
-                  Band: {state.data.band.label} (0–100)
-                </p>
-              </div>
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+            <ScoreGauge score={state.data.score} band={state.data.band} />
+            <div className="lg:col-span-2">
+              <MetricBreakdown metrics={state.data.metrics} />
             </div>
-          </section>
+          </div>
 
-          {/* TODO(phase-3.2): score gauge + metric breakdown charts */}
           {/* TODO(phase-3.3): commit timeline, tier donut, author leaderboard */}
         </div>
       )}
