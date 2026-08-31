@@ -5,6 +5,7 @@ import {
 } from "@/lib/github/client";
 import { GithubError, toGithubError } from "@/lib/github/errors";
 import { validateGithubUrl } from "@/lib/github/url-validator";
+import { computeHealthScore } from "@/lib/scoring/engine";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -68,12 +69,19 @@ export async function POST(request: Request) {
       maxCommits: 100,
     });
 
+    const analysis = computeHealthScore(telemetry.commits);
+
     return NextResponse.json({
       repo: telemetry.meta,
       commits: telemetry.commits,
       authors: computeAuthorStats(telemetry.commits),
       fetchedAt: telemetry.fetchedAt,
       rateLimit: telemetry.rateLimit,
+      score: analysis.score,
+      band: analysis.band,
+      metrics: analysis.metrics,
+      tiers: analysis.tiers,
+      anomalies: analysis.metrics.anomaly.flags,
     });
   } catch (err) {
     const error = err instanceof GithubError ? err : toGithubError(err);
