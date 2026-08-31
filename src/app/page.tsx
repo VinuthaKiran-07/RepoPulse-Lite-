@@ -1,9 +1,12 @@
 "use client";
 
 import AnalyzeForm from "@/components/AnalyzeForm";
+import AuthorLeaderboard from "@/components/AuthorLeaderboard";
+import CommitTimeline from "@/components/CommitTimeline";
 import MetricBreakdown from "@/components/MetricBreakdown";
 import RepoSummaryCard from "@/components/RepoSummaryCard";
 import ScoreGauge from "@/components/ScoreGauge";
+import TierDonut from "@/components/TierDonut";
 import { useAnalyze } from "@/lib/use-analyze";
 
 function errorHeadline(code: string): string {
@@ -65,7 +68,18 @@ export default function Home() {
             </div>
           </div>
 
-          {/* TODO(phase-3.3): commit timeline, tier donut, author leaderboard */}
+          {/* TODO(phase-3.4): anomaly feed, loading skeletons, refined error states */}
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+            <div className="lg:col-span-2">
+              <CommitTimeline commits={state.data.commits} />
+            </div>
+            <TierDonut tiers={state.data.tiers} />
+          </div>
+
+          <AuthorLeaderboard
+            authors={state.data.authors}
+            totalCommits={state.data.commits.length}
+          />
         </div>
       )}
     </main>
