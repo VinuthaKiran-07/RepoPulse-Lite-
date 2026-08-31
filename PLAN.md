@@ -53,8 +53,8 @@
 
 **Goal:** OpenAI-compatible audit report with graceful degradation.
 
-- [ ] `feat: add openai-compatible llm client with settings panel`
-- [ ] `feat: generate executive risk report from metric snapshot`
+- [x] `feat: add openai-compatible llm client with settings panel`
+- [x] `feat: generate executive risk report from metric snapshot`
 
 **Exit:** With key → LLM report; without key → labeled heuristic-only fallback.
 
