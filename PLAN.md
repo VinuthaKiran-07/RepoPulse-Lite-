@@ -41,10 +41,11 @@
 
 **Goal:** Polished, responsive, skeleton-loaded analytics UI.
 
-- [ ] `feat: build analyze form and api client state machine`
-- [ ] `feat: add score gauge and metric breakdown charts`
-- [ ] `feat: add commit timeline, tier donut and author leaderboard`
-- [ ] `feat: add anomaly feed, loading skeletons and error states`
+- [x] `feat: build analyze form and api client state machine`
+- [x] `feat: add score gauge and metric breakdown charts`
+- [x] `feat: add commit timeline, tier donut and author leaderboard`
+- [x] `feat: add anomaly feed, loading skeletons and error states`
+- [x] `test: add dashboard client and component tests with jsdom environment`
 
 **Exit:** Full flow works end-to-end on mobile + desktop widths.
 
