@@ -3,6 +3,7 @@
 import { useCallback, useState } from "react";
 import AnalyzeForm from "@/components/AnalyzeForm";
 import AnomalyFeed from "@/components/AnomalyFeed";
+import AuditSection from "@/components/AuditSection";
 import AuthorLeaderboard from "@/components/AuthorLeaderboard";
 import CommitTimeline from "@/components/CommitTimeline";
 import DashboardSkeleton from "@/components/DashboardSkeleton";
@@ -10,21 +11,41 @@ import ErrorBanner from "@/components/ErrorBanner";
 import MetricBreakdown from "@/components/MetricBreakdown";
 import RepoSummaryCard from "@/components/RepoSummaryCard";
 import ScoreGauge from "@/components/ScoreGauge";
+import SettingsPanel from "@/components/SettingsPanel";
 import TierDonut from "@/components/TierDonut";
 import { useAnalyze } from "@/lib/use-analyze";
+import { useAudit } from "@/lib/use-audit";
+import { useLlmSettings } from "@/lib/use-llm-settings";
 
 export default function Home() {
   const { state, analyze } = useAnalyze();
+  const { settings, saveSettings, clearSettings } = useLlmSettings();
+  const { state: auditState, generate: generateAudit, reset: resetAudit } = useAudit();
   const loading = state.status === "loading";
   const [dismissedError, setDismissedError] = useState(false);
+  const hasLlmKey = settings.apiKey.length > 0;
 
   const handleAnalyze = useCallback(
     (repoUrl: string, token?: string) => {
       setDismissedError(false);
+      resetAudit();
       analyze(repoUrl, token);
     },
-    [analyze]
+    [analyze, resetAudit]
   );
+
+  const handleGenerateAudit = useCallback(() => {
+    if (state.status !== "success") {
+      return;
+    }
+    generateAudit(
+      state.repoUrl,
+      state.data,
+      hasLlmKey
+        ? { baseUrl: settings.baseUrl, model: settings.model, apiKey: settings.apiKey }
+        : undefined
+    );
+  }, [state, generateAudit, hasLlmKey, settings.baseUrl, settings.model, settings.apiKey]);
 
   const showError =
     state.status === "error" && !dismissedError;
@@ -42,6 +63,10 @@ export default function Home() {
       </header>
 
       <AnalyzeForm onAnalyze={handleAnalyze} loading={loading} />
+
+      <div className="mt-6">
+        <SettingsPanel settings={settings} onSave={saveSettings} onClear={clearSettings} />
+      </div>
 
       {loading && (
         <div className="mt-6">
@@ -89,6 +114,18 @@ export default function Home() {
           />
 
           <AnomalyFeed flags={state.data.anomalies} />
+
+          <AuditSection
+            status={auditState.status}
+            report={auditState.status === "success" ? auditState.data.report : null}
+            mode={auditState.status === "success" ? auditState.data.mode : null}
+            model={auditState.status === "success" ? auditState.data.model : null}
+            reason={auditState.status === "success" ? auditState.data.reason : null}
+            errorCode={auditState.status === "error" ? auditState.code : null}
+            errorMessage={auditState.status === "error" ? auditState.message : null}
+            hasLlmKey={hasLlmKey}
+            onGenerate={handleGenerateAudit}
+          />
         </div>
       )}
     </main>
