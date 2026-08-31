@@ -1,30 +1,33 @@
 "use client";
 
+import { useCallback, useState } from "react";
 import AnalyzeForm from "@/components/AnalyzeForm";
+import AnomalyFeed from "@/components/AnomalyFeed";
 import AuthorLeaderboard from "@/components/AuthorLeaderboard";
 import CommitTimeline from "@/components/CommitTimeline";
+import DashboardSkeleton from "@/components/DashboardSkeleton";
+import ErrorBanner from "@/components/ErrorBanner";
 import MetricBreakdown from "@/components/MetricBreakdown";
 import RepoSummaryCard from "@/components/RepoSummaryCard";
 import ScoreGauge from "@/components/ScoreGauge";
 import TierDonut from "@/components/TierDonut";
 import { useAnalyze } from "@/lib/use-analyze";
 
-function errorHeadline(code: string): string {
-  switch (code) {
-    case "INVALID_URL":
-      return "That doesn't look like a public GitHub repository URL.";
-    case "REPO_NOT_FOUND":
-      return "Repository not found or private. Check the URL or make the repository public.";
-    case "RATE_LIMITED":
-      return "GitHub rate limit reached — add a token in the form or wait a few minutes.";
-    default:
-      return "Something went wrong while analyzing the repository. Please try again.";
-  }
-}
-
 export default function Home() {
   const { state, analyze } = useAnalyze();
   const loading = state.status === "loading";
+  const [dismissedError, setDismissedError] = useState(false);
+
+  const handleAnalyze = useCallback(
+    (repoUrl: string, token?: string) => {
+      setDismissedError(false);
+      analyze(repoUrl, token);
+    },
+    [analyze]
+  );
+
+  const showError =
+    state.status === "error" && !dismissedError;
 
   return (
     <main className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 sm:py-12">
@@ -38,23 +41,28 @@ export default function Home() {
         </p>
       </header>
 
-      <AnalyzeForm onAnalyze={analyze} loading={loading} />
+      <AnalyzeForm onAnalyze={handleAnalyze} loading={loading} />
 
-      {state.status === "error" && (
-        <section
-          role="alert"
-          className="mt-6 rounded-2xl border border-red-300 bg-red-50 p-5 dark:border-red-500/40 dark:bg-red-950/40"
-        >
-          <h2 className="text-sm font-semibold text-red-800 dark:text-red-300">
-            {errorHeadline(state.code)}
-          </h2>
-          <p className="mt-1 text-xs text-red-700 dark:text-red-400">{state.message}</p>
-          {state.retryAfterSeconds !== undefined && (
-            <p className="mt-2 text-xs text-red-700 dark:text-red-400">
-              Rate limit resets in about {Math.ceil(state.retryAfterSeconds / 60)} min.
-            </p>
-          )}
-        </section>
+      {loading && (
+        <div className="mt-6">
+          <DashboardSkeleton />
+        </div>
+      )}
+
+      {showError && (
+        <div className="mt-6">
+          <ErrorBanner
+            code={state.code}
+            message={state.message}
+            repoUrl={state.repoUrl}
+            retryAfterSeconds={state.retryAfterSeconds}
+            onRetry={() => {
+              setDismissedError(false);
+              analyze(state.repoUrl);
+            }}
+            onDismiss={() => setDismissedError(true)}
+          />
+        </div>
       )}
 
       {state.status === "success" && (
@@ -68,7 +76,6 @@ export default function Home() {
             </div>
           </div>
 
-          {/* TODO(phase-3.4): anomaly feed, loading skeletons, refined error states */}
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
             <div className="lg:col-span-2">
               <CommitTimeline commits={state.data.commits} />
@@ -80,6 +87,8 @@ export default function Home() {
             authors={state.data.authors}
             totalCommits={state.data.commits.length}
           />
+
+          <AnomalyFeed flags={state.data.anomalies} />
         </div>
       )}
     </main>
