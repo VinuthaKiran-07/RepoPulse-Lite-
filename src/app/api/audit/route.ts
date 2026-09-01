@@ -131,20 +131,32 @@ export async function POST(request: Request) {
     });
   }
 
-  try {
-    const report = await chatCompletion(
-      { baseUrl, model, apiKey },
-      buildAuditMessages(snapshotValidation.snapshot),
-      { temperature: AUDIT_TEMPERATURE, timeoutMs: 90000 }
-    );
+  let report: string | null = null;
+  let lastError: unknown = null;
+  for (let attempt = 0; attempt < 2 && report === null; attempt += 1) {
+    try {
+      report = await chatCompletion(
+        { baseUrl, model, apiKey },
+        buildAuditMessages(snapshotValidation.snapshot),
+        { temperature: AUDIT_TEMPERATURE, timeoutMs: 55_000 }
+      );
+    } catch (err) {
+      lastError = err;
+    }
+  }
+
+  if (report !== null) {
     return NextResponse.json({
       mode: "llm",
       report,
       model,
       reason: null,
     });
-  } catch (err) {
-    const error = err instanceof LlmError ? err : toLlmError(err);
+  }
+
+  {
+    const error =
+      lastError instanceof LlmError ? (lastError as LlmError) : toLlmError(lastError);
     console.error(
       "[audit]",
       JSON.stringify({
