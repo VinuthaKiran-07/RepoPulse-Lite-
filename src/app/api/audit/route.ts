@@ -135,7 +135,7 @@ export async function POST(request: Request) {
     const report = await chatCompletion(
       { baseUrl, model, apiKey },
       buildAuditMessages(snapshotValidation.snapshot),
-      { temperature: AUDIT_TEMPERATURE }
+      { temperature: AUDIT_TEMPERATURE, timeoutMs: 90000 }
     );
     return NextResponse.json({
       mode: "llm",
