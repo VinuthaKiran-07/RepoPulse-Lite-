@@ -62,7 +62,7 @@
 
 **Goal:** Expose the engine as a reusable agent tool.
 
-- [ ] `feat: add mcp server exposing analyze-repo tool`
+- [x] `feat: add mcp server exposing analyze-repo tool`
 
 **Exit:** `npx tsx mcp/server.ts` responds to `tools/list` + `tools/call`.
 
