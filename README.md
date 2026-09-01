@@ -2,9 +2,9 @@
 
 RepoPulse Lite is a production-grade Next.js application that ingests any public GitHub repository URL, fetches Git telemetry via the GitHub REST API, computes a deterministic 0-100 Health Score from a custom multi-dimensional heuristic engine, and generates an optional LLM-powered executive risk audit — all rendered on an interactive, dark-mode-aware analytics dashboard. The scoring engine is a pure TypeScript module with zero I/O, zero randomness, and zero timestamps: the same input always produces the same score, forever.
 
-`Next.js 15` | `TypeScript` | `Vitest (216 tests)` | `Deployed on Vercel`
+`Next.js 15` | `TypeScript` | `Vitest (225 tests)` | `Deployed on Vercel`
 
-**Live URL:** https://repopulse-lite.vercel.app (deployed)
+**Live URL:** https://repopulse-lite-woad.vercel.app (deployed)
 
 ---
 
@@ -349,4 +349,4 @@ Development used the **OpenCode CLI harness** with the **z-ai/glm-5.3-free** mod
 
 `vercel.json` is committed (framework preset, `bom1` region, security headers: `X-Content-Type-Options`, `X-Frame-Options: DENY`, `Referrer-Policy`). The app is live at:
 
-**https://repopulse-lite.vercel.app**
+**https://repopulse-lite-woad.vercel.app**
