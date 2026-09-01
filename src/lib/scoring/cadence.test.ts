@@ -32,7 +32,12 @@ describe("computeCadence", () => {
     expect(result.fFreq).toBeCloseTo(2 / (1 + Math.exp(-2 * (5 / 4 - 1.2))), 10);
     expect(result.gapCv).toBe(0);
     expect(result.fRegularity).toBe(1);
-    expect(result.score).toBeCloseTo(100 * (0.6 * (2 / (1 + Math.exp(-2 * (5 / 4 - 1.2)))) + 0.4 * 1), 10);
+    expect(result.score).toBe(
+      Math.min(
+        100,
+        100 * (0.6 * (2 / (1 + Math.exp(-2 * (5 / 4 - 1.2)))) + 0.4 * 1)
+      )
+    );
   });
 
   it("penalizes burst-then-silence patterns", () => {
@@ -67,7 +72,12 @@ describe("computeCadence", () => {
     expect(result.fFreq).toBeCloseTo(2 / (1 + Math.exp(-2 * (1 - 1.2))), 10);
     expect(result.gapCv).toBe(0);
     expect(result.fRegularity).toBe(1);
-    expect(result.score).toBeCloseTo(100 * (0.6 * (2 / (1 + Math.exp(-2 * (1 - 1.2)))) + 0.4 * 1), 10);
+    expect(result.score).toBe(
+      Math.min(
+        100,
+        100 * (0.6 * (2 / (1 + Math.exp(-2 * (1 - 1.2)))) + 0.4 * 1)
+      )
+    );
   });
 
   it("treats duplicate timestamps as zero gaps", () => {
@@ -95,6 +105,19 @@ describe("computeCadence", () => {
     ]);
     const descending = [...ascending].reverse();
     expect(computeCadence(descending)).toEqual(computeCadence(ascending));
+  });
+
+  it("caps the cadence score at 100 when frequency saturates", () => {
+    const dates: string[] = [];
+    for (let i = 0; i < 60; i += 1) {
+      dates.push(new Date(Date.UTC(2026, 0, 1, i * 2, 0, 0)).toISOString());
+    }
+    const result = computeCadence(commitsAt(dates));
+    expect(result.commitsPerDay).toBeGreaterThan(5);
+    expect(result.fFreq).toBeGreaterThan(1.9);
+    const unclamped = 100 * (0.6 * result.fFreq + 0.4 * result.fRegularity);
+    expect(unclamped).toBeGreaterThan(100);
+    expect(result.score).toBe(100);
   });
 
   it("treats unparseable dates as epoch zero deterministically", () => {

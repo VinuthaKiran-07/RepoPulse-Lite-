@@ -1,6 +1,10 @@
 import type { CommitDetail } from "@/lib/github/types";
 import type { CadenceResult } from "@/lib/scoring/types";
 
+function clamp(value: number, min: number, max: number): number {
+  return Math.min(Math.max(value, min), max);
+}
+
 export function computeCadence(commits: CommitDetail[]): CadenceResult {
   if (commits.length === 0) {
     return {
@@ -45,7 +49,7 @@ export function computeCadence(commits: CommitDetail[]): CadenceResult {
     fRegularity = Math.min(Math.max(1 - gapCv / 2, 0), 1);
   }
 
-  const score = 100 * (0.6 * fFreq + 0.4 * fRegularity);
+  const score = clamp(100 * (0.6 * fFreq + 0.4 * fRegularity), 0, 100);
 
   return {
     score,

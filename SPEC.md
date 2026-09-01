@@ -156,7 +156,7 @@ gaps g_i = inter-commit intervals (hours)
 cv = std(gaps) / mean(gaps)                              // coefficient of variation
 f_regularity = clamp(1 − cv / 2, 0, 1)                   // consistent gaps → 1
 
-Cadence = 100 · (0.6·f_freq + 0.4·f_regularity)
+Cadence = 100 · clamp(0.6·f_freq + 0.4·f_regularity, 0, 1)   // capped to [0,100]
 ```
 
 #### Metric 4: Author Diversity / Entropy (weight 0.20)

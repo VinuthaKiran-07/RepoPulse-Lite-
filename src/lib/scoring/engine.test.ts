@@ -128,7 +128,10 @@ describe("computeHealthScore", () => {
     expect(result.metrics.cadence.commitsPerDay).toBeCloseTo(v, 10);
     expect(result.metrics.cadence.fFreq).toBeCloseTo(expectedFFreq, 10);
     expect(result.metrics.cadence.fRegularity).toBe(1);
-    const expectedCadence = 100 * (0.6 * expectedFFreq + 0.4 * 1);
+    const expectedCadence = Math.min(
+      100,
+      100 * (0.6 * expectedFFreq + 0.4 * 1)
+    );
     expect(result.metrics.cadence.score).toBeCloseTo(expectedCadence, 10);
 
     expect(result.metrics.diversity.score).toBeCloseTo(100, 10);
