@@ -66,6 +66,18 @@ export async function POST(request: Request) {
     );
   }
 
+  if (error.code === "INVALID_URL") {
+    return NextResponse.json(
+      {
+        error: {
+          code: "INVALID_URL",
+          message: error.message,
+        },
+      },
+      { status: 400 }
+    );
+  }
+
   if (error.code === "REPO_NOT_FOUND") {
     return NextResponse.json(
       {
