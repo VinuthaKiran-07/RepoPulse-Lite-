@@ -70,10 +70,10 @@
 
 **Goal:** Production live + submission complete.
 
-- [ ] `chore: configure vercel deployment`
-- [ ] `docs: add readme with architecture and heuristic documentation`
-- [ ] `docs: add development log with ai tooling audit`
-- [ ] Deploy to Vercel, verify live URL
+- [x] `chore: configure vercel deployment`
+- [x] `docs: add readme with architecture and heuristic documentation`
+- [x] `docs: add development log with ai tooling audit`
+- [x] Deploy to Vercel, verify live URL
 - [ ] Email 4 deliverables → pavan@geopageconsultants.in
 
 ---
